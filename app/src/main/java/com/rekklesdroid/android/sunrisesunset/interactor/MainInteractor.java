@@ -1,10 +1,13 @@
 package com.rekklesdroid.android.sunrisesunset.interactor;
 
+import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.location.places.Place;
 import com.rekklesdroid.android.sunrisesunset.MainContract;
 import com.rekklesdroid.android.sunrisesunset.entity.JsonData;
 import com.rekklesdroid.android.sunrisesunset.service.ApiService;
+import com.rekklesdroid.android.sunrisesunset.view.MainActivity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -14,15 +17,17 @@ public class MainInteractor implements MainContract.Interactor {
 
     private MainContract.InteractorOutput mInteractorOutput;
 
+    private double mLatitude;
+    private double mLongitude;
+
     public MainInteractor(MainContract.InteractorOutput interactorOutput) {
         mInteractorOutput = interactorOutput;
     }
 
-
     @Override
     public void loadResults(ApiService apiService) {
-        double latitude = 36.7201600;
-        double longitude = -4.4203400;
+        double latitude = mLatitude;
+        double longitude = mLongitude;
         apiService.getApi().getTimesInfo(latitude, longitude)
                 .enqueue(new Callback<JsonData>() {
                     @Override
@@ -42,5 +47,12 @@ public class MainInteractor implements MainContract.Interactor {
                         mInteractorOutput.onQueryError();
                     }
                 });
+    }
+
+    @Override
+    public void loadResults(ApiService apiService, Place place) {
+        mLatitude = place.getLatLng().latitude;
+        mLongitude = place.getLatLng().longitude;
+        loadResults(apiService);
     }
 }

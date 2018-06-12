@@ -1,5 +1,10 @@
 package com.rekklesdroid.android.sunrisesunset.view;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +14,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.rekklesdroid.android.sunrisesunset.MainContract;
 import com.rekklesdroid.android.sunrisesunset.R;
 import com.rekklesdroid.android.sunrisesunset.entity.Results;
@@ -18,7 +33,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements MainContract.View {
+public class MainActivity extends AppCompatActivity implements MainContract.View, PlaceSelectionListener {
+
+//    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     MainContract.Presenter mPresenter;
 
@@ -34,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @BindView(R.id.prog_bar_loading_data)
     ProgressBar mProgressBar;
 
+//    Location mLastLocation;
+//    FusedLocationProviderClient mFusedLocationProviderClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +61,65 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         ButterKnife.bind(this);
 
         mPresenter = new MainPresenter(this);
+
+        // mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        initPlaceAutocompleteFragment();
     }
+
+    private void initPlaceAutocompleteFragment() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.fragment_autocomplete);
+
+        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+                .build();
+
+        autocompleteFragment.setFilter(typeFilter);
+        autocompleteFragment.setOnPlaceSelectedListener(this);
+    }
+
+/*
+    public Location getLocation() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
+        } else {
+            mFusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                mLastLocation = location;
+                                mTvSunrise.setText(String.valueOf(mLastLocation.getLatitude()));
+                            }
+                        }
+                    });
+        }
+        return mLastLocation;
+    }
+*/
+
+/*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLocation();
+                } else {
+                    Toast.makeText(this,
+                            "location permission denied",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+*/
 
     @Override
     protected void onResume() {
@@ -62,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void hideLoading() {
-mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -80,6 +158,18 @@ mProgressBar.setVisibility(View.GONE);
     @OnClick(R.id.btn_get_info)
     public void onBtnGetInfoClick() {
         Log.d("btn", "clicked");
+        //getLocation();
         mPresenter.onGetInfoBtnClicked();
+    }
+
+    @Override
+    public void onPlaceSelected(Place place) {
+        mPresenter.onPlaceSelected(place);
+    }
+
+    @Override
+    public void onError(Status status) {
+        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
+                Toast.LENGTH_SHORT).show();
     }
 }
