@@ -1,19 +1,18 @@
 package com.rekklesdroid.android.sunrisesunset.presenter;
 
-import android.location.Location;
-
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.places.Place;
 import com.rekklesdroid.android.sunrisesunset.MainContract;
 import com.rekklesdroid.android.sunrisesunset.entity.Results;
 import com.rekklesdroid.android.sunrisesunset.interactor.MainInteractor;
 import com.rekklesdroid.android.sunrisesunset.service.ApiService;
-import com.rekklesdroid.android.sunrisesunset.view.MainActivity;
 
 public class MainPresenter implements MainContract.Presenter, MainContract.InteractorOutput {
 
     private MainContract.View mView;
     private MainContract.Interactor mInteractor;
     private ApiService mApiService;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     public MainPresenter(MainContract.View view) {
         mView = view;
@@ -25,15 +24,26 @@ public class MainPresenter implements MainContract.Presenter, MainContract.Inter
     }
 
     @Override
-    public void onGetInfoBtnClicked() {
+    public void onGetInfoForCurrentLocation() {
         mView.showLoading();
-        mInteractor.loadResults(mApiService);
+        mView.requestLocationPermission();
     }
 
     @Override
     public void onPlaceSelected(Place place) {
         mView.showLoading();
         mInteractor.loadResults(mApiService, place);
+    }
+
+    @Override
+    public void onLocationPermissionGranted() {
+        mFusedLocationProviderClient = mView.getFusedLocationProviderClient();
+        mInteractor.loadResults(mApiService, mFusedLocationProviderClient);
+    }
+
+    @Override
+    public void onLocationPermissionDenied() {
+        mView.showInfoMessage("Location permission denied");
     }
 
     @Override
@@ -52,5 +62,11 @@ public class MainPresenter implements MainContract.Presenter, MainContract.Inter
     public void onQueryError() {
         mView.hideLoading();
         mView.showInfoMessage("Error when loading data");
+    }
+
+    @Override
+    public void onGetLastLocationFailure() {
+        mView.hideLoading();
+        mView.showInfoMessage("Error with getting current location");
     }
 }
