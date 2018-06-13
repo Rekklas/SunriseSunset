@@ -3,9 +3,9 @@
 
     <string name="sunrise_sunset_text">"Sunrise: %1$s \nSunset: %2$s
         \nSolarNoon: %3$s \nDayLength: %4$s
-        \nCivilTwilightBegin: %5s \nCivilTwilightEnd: %6s
-        \nNauticalTwilightBegin: %7s \nNauticalTwilightEnd: %8s
-        \nAstronomicalTwilightBegin: %9s \nAstronomicalTwilightEnd: %10s"
+        \nCivilTwilightBegin: %5$s \nCivilTwilightEnd: %6$s
+        \nNauticalTwilightBegin: %7$s \nNauticalTwilightEnd: %8$s
+        \nAstronomicalTwilightBegin: %9$s \nAstronomicalTwilightEnd: %10$s"
     </string>
     <string name="failure_place_selection">Place selection failed: %1$s</string>
     <string name="hint_search_for_any_city">Search for any city</string>
