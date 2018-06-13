@@ -2,7 +2,6 @@ package com.rekklesdroid.android.sunrisesunset.interactor;
 
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.places.Place;
@@ -27,6 +26,11 @@ public class MainInteractor implements MainContract.Interactor {
         mInteractorOutput = interactorOutput;
     }
 
+    /**
+     * Method loads JSON results from Sunrise/Sunset API
+     *
+     * @param apiService object that provides RetrofitClient for HTTP requests
+     */
     @Override
     public void loadResults(ApiService apiService) {
         apiService.getApi().getTimesInfo(mLatitude, mLongitude)
@@ -47,6 +51,13 @@ public class MainInteractor implements MainContract.Interactor {
                 });
     }
 
+    /**
+     * Method defines current device location and invokes
+     * {@link #loadResults(ApiService)} for getting JSON response
+     *
+     * @param apiService object that provides RetrofitClient for HTTP requests
+     * @param fusedLocationProviderClient using for getting current device location
+     */
     @Override
     public void loadResults(final ApiService apiService,
                             FusedLocationProviderClient fusedLocationProviderClient) {
@@ -73,6 +84,13 @@ public class MainInteractor implements MainContract.Interactor {
         }
     }
 
+    /**
+     * Method defines location of selected city and invokes
+     * {@link #loadResults(ApiService)} for getting JSON response
+     *
+     * @param apiService object that provides RetrofitClient for HTTP requests
+     * @param place object which contains information about selected city
+     */
     @Override
     public void loadResults(ApiService apiService, Place place) {
         mLatitude = place.getLatLng().latitude;

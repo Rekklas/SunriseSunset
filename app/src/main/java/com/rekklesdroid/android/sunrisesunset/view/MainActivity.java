@@ -127,11 +127,21 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mPresenter.onGetInfoForCurrentLocation();
     }
 
+    /**
+     * invokes when city from search view was selected
+     *
+     * @param place contains selected city's information
+     */
     @Override
     public void onPlaceSelected(Place place) {
         mPresenter.onPlaceSelected(place);
     }
 
+    /**
+     * invokes if selection of city was failed
+     *
+     * @param status status of selection
+     */
     @Override
     public void onError(Status status) {
         Toast.makeText(this,
@@ -139,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * initialize autocompleteFragment with search view for places selection
+     */
     private void initPlaceAutocompleteFragment() {
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.fragment_autocomplete);
