@@ -29,23 +29,19 @@ public class MainInteractor implements MainContract.Interactor {
 
     @Override
     public void loadResults(ApiService apiService) {
-        Log.d("locat2", String.valueOf(mLatitude));
         apiService.getApi().getTimesInfo(mLatitude, mLongitude)
                 .enqueue(new Callback<JsonData>() {
                     @Override
                     public void onResponse(Call<JsonData> call, Response<JsonData> response) {
                         JsonData data = response.body();
-                        Log.d("response", data.getResults().getSunrise());
 
                         if (data != null && data.getResults() != null) {
-
                             mInteractorOutput.onQuerySuccess(data.getResults());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<JsonData> call, Throwable t) {
-                        Log.d("failure", "failure");
                         mInteractorOutput.onQueryError();
                     }
                 });
@@ -59,12 +55,12 @@ public class MainInteractor implements MainContract.Interactor {
                     .addOnSuccessListener(new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            Log.d("locat", String.valueOf(location.getLatitude()));
+                            if (location != null) {
+                                mLatitude = location.getLatitude();
+                                mLongitude = location.getLongitude();
 
-                            mLatitude = location.getLatitude();
-                            mLongitude = location.getLongitude();
-                            Log.d("locat1.1", String.valueOf(mLatitude));
-                            loadResults(apiService);
+                                loadResults(apiService);
+                            }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override

@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiService {
-    public static final String BASE_URL="https://api.sunrise-sunset.org/";
+    private static final String BASE_URL="https://api.sunrise-sunset.org/";
 
     private Retrofit mRetrofit = null;
 

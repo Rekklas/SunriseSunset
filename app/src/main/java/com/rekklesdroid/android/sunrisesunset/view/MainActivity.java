@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -38,11 +37,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @BindView(R.id.btn_get_info)
     Button mBtnGetInfoForCurrentLocation;
 
-    @BindView(R.id.tv_sunrise)
-    TextView mTvSunrise;
-
-    @BindView(R.id.tv_sunset)
-    TextView mTvSunset;
+    @BindView(R.id.tv_sunrise_sunset)
+    TextView mTvSunriseSunset;
 
     @BindView(R.id.prog_bar_loading_data)
     ProgressBar mProgressBar;
@@ -82,9 +78,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void publishData(Results data) {
-        Log.d("Sunrise:", data.getSunrise());
-        mTvSunrise.setText(String.format("Sunrise - %s", data.getSunrise()));
-        mTvSunset.setText(String.format("Sunset - %s", data.getSunset()));
+        mTvSunriseSunset.setText(getString(R.string.sunrise_sunset_text,
+                data.getSunrise(), data.getSunset(),
+                data.getSolarNoon(), data.getDayLength(),
+                data.getCivilTwilightBegin(), data.getCivilTwilightEnd(),
+                data.getNauticalTwilightBegin(), data.getNauticalTwilightEnd(),
+                data.getAstronomicalTwilightBegin(), data.getAstronomicalTwilightEnd()));
     }
 
     @Override
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @OnClick(R.id.btn_get_info)
     public void onGetInfoForCurrentLocationClicked() {
-        Log.d("btn", "clicked");
         mPresenter.onGetInfoForCurrentLocation();
     }
 
@@ -136,13 +134,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void onError(Status status) {
-        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
+        Toast.makeText(this,
+                getString(R.string.failure_place_selection, status.getStatusMessage()),
                 Toast.LENGTH_SHORT).show();
     }
 
     private void initPlaceAutocompleteFragment() {
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.fragment_autocomplete);
+        autocompleteFragment.setHint(getString(R.string.hint_search_for_any_city));
 
         AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
                 .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)

@@ -21,7 +21,6 @@ public interface MainContract {
     }
 
     interface Presenter {
-        // User actions
         void onGetInfoForCurrentLocation();
 
         void onPlaceSelected(Place place);
@@ -30,7 +29,6 @@ public interface MainContract {
 
         void onLocationPermissionDenied();
 
-        // Model updates
         void onDestroy();
     }
 
